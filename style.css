@@ -100,6 +100,7 @@ img {
 }
 
 #card {
+  font-family: Arial, Helvetica, sans-serif;
   width: 100%;
   min-width: 350px;
   max-width: 28.125em;
@@ -121,4 +122,19 @@ img {
   left: 50%;
   -webkit-transform: translate3d(-50%,-50%,0);
   transform: translate3d(-50%,-50%,0);
+}
+
+.quote {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.fad {
+  position: relative;
+  font-family: 'Font Awesome 5 Duotone';
+  font-weight: 900;
 }
