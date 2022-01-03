@@ -1,74 +1,97 @@
-/*Clock*/
-function showTime(){
-  var date = new Date();
-  var h = date.getHours(); // 0 - 23
-  var m = date.getMinutes(); // 0 - 59
-  var s = date.getSeconds(); // 0 - 59
-  var session = "AM";
-  
-  if(h == 0){
-      h = 12;
-  }
-  
-  if(h > 12){
-      h = h - 12;
-      session = "PM";
-  }
-  
-  h = (h < 10) ? "0" + h : h;
-  m = (m < 10) ? "0" + m : m;
-  s = (s < 10) ? "0" + s : s;
-  
-  var time = h + ":" + m + ":" + s + " " + session;
-  document.getElementById("MyClockDisplay").innerText = time;
-  document.getElementById("MyClockDisplay").textContent = time;
-  
-  setTimeout(showTime, 1000);
-  
+const toggle = document.querySelector(".toggle__theme");
+const card = document.querySelector(".app");
+toggle.addEventListener("click", () => {
+    let theme = toggle.querySelector(".fas");
+    if (theme.classList.contains("fa-moon")) {
+        theme.classList.remove("fa-moon");
+        theme.classList.add("fa-sun");
+        card.classList.add("dark");
+    } else {
+
+        theme.classList.remove("fa-sun");
+        theme.classList.add("fa-moon");
+        card.classList.remove("dark");
+
+    }
+})
+
+//Chống copy
+function killCopy(e){
+    return false;
 }
 
-showTime();
+function reEnable(){
+    return true;
+}
 
+document.onselectstart=new Function ("return false");
 
+if (window.sidebar){
+    document.onmousedown=killCopy;
+    document.onclick=reEnable;
+}
 
-/*Digital clock*/
-const timeElm = document.getElementById('time');
-const doc = document.documentElement;
-const { clientWidth, clientHeight } = doc;
+function noteOut()
+{
+    var note = document.querySelector(".note");
+    note.style.display = "none";
+}
 
-const pad = val => val < 10 ? `0${val}` : val;
+setInterval(noteOut,3000);
 
-const animationFrame$ = Rx.Observable.interval(0, Rx.Scheduler.animationFrame);
+//Chống chuột phải 
+window.onload = function() {
+    document.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+    }, false);
+    document.addEventListener("keydown", function(e) {
+        //document.onkeydown = function(e) {
+        // "I" key
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+            disabledEvent(e);
+        }
+        // "J" key
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+            disabledEvent(e);
+        }
+        // "S" key + macOS
+        if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+            disabledEvent(e);
+        }
+        // "U" key
+        if (e.ctrlKey && e.keyCode == 85) {
+            disabledEvent(e);
+        }
+        // "F12" key
+        if (event.keyCode == 123) {
+            disabledEvent(e);
+        }
+    }, false);
 
-const time$ = Rx.Observable.
-interval(1000).
-map(() => {
-  const time = new Date();
+    function disabledEvent(e) {
+        if (e.stopPropagation) {
+            e.stopPropagation();
+        } else if (window.event) {
+            window.event.cancelBubble = true;
+        }
+        e.preventDefault();
+        return false;
+    }
+};
 
-  return {
-    hours: time.getHours(),
-    minutes: time.getMinutes(),
-    seconds: time.getSeconds() };
-
-}).
-subscribe(({ hours, minutes, seconds }) => {
-  timeElm.setAttribute('data-hours', pad(hours));
-  timeElm.setAttribute('data-minutes', pad(minutes));
-  timeElm.setAttribute('data-seconds', pad(seconds));
+//Chống Ctrl + U
+document.onkeydown = function(e) {
+    if (e.ctrlKey && 
+        (e.keyCode === 67 || 
+         e.keyCode === 86 || 
+         e.keyCode === 85 || 
+         e.keyCode === 117)) {
+        return false;
+    } else {
+        return true;
+    }
+};
+$(document).keypress("u",function(e) {
+    if(e.ctrlKey) return false;
+    else return true;
 });
-
-const mouse$ = Rx.Observable.
-fromEvent(document, 'mousemove').
-map(({ clientX, clientY }) => ({
-  x: (clientWidth / 2 - clientX) / clientWidth,
-  y: (clientHeight / 2 - clientY) / clientHeight }));
-
-
-const smoothMouse$ = animationFrame$.
-withLatestFrom(mouse$, (_, m) => m).
-scan(RxCSS.lerp(0.1));
-
-RxCSS({
-  mouse: smoothMouse$ },
-timeElm);
-/*End of digital clock*/
